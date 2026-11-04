@@ -1,0 +1,38 @@
+
+name: Сборка Jaeger AI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить файлы
+        uses: actions/checkout@v4
+
+      - name: Установить Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Установить Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.2'
+
+      - name: Распаковать проект
+        run: unzip -q JaegerAI_CloudBuild.zip -d project
+
+      - name: Собрать APK
+        working-directory: project
+        run: gradle assembleDebug --no-daemon
+
+      - name: Сохранить APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: JaegerAI-APK
+          path: project/app/build/outputs/apk/debug/*.apk
+          
